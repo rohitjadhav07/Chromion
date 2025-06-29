@@ -48,7 +48,7 @@ Chromion is a decentralized lending and borrowing platform built on Ethereum, le
 - Airdrops and credit scores are handled via Chainlink VRF and Functions.
 
 ## For Hackathon Judges
-- **Live Demo:** [Vercel Deployment Link]https://chromion-three.vercel.app/
+- **Live Demo:** https://chromion-three.vercel.app/
 - **Full Source Code & Docs:** [https://github.com/rohitjadhav07/Chromion](https://github.com/rohitjadhav07/Chromion)
 - **Setup:** See above for install/build/deploy. All contracts and frontend code are open-source.
 - **Security:** No admin keys, no upgradeable proxies, all logic is on-chain and open for review.
