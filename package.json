@@ -1,0 +1,15 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@chainlink/contracts": "^0.8.0",
+    "@chainlink/contracts-ccip": "^1.6.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.0.0",
+    "dotenv": "^17.0.0",
+    "hardhat": "^2.25.0"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.2.4",
+    "@tailwindcss/postcss": "^4.1.11",
+    "framer-motion": "^12.19.2"
+  }
+}
