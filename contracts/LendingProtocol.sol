@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+
 import { IRouterClient } from "@chainlink/contracts-ccip/contracts/interfaces/IRouterClient.sol";
 import { Client } from "@chainlink/contracts-ccip/contracts/libraries/Client.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
@@ -9,9 +10,11 @@ import "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import { FunctionsClient } from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 
 contract LendingProtocol is AutomationCompatibleInterface, VRFConsumerBaseV2, FunctionsClient {
+    IERC20 public dai;
     AggregatorV3Interface public priceFeed;
     address public owner;
     uint256 public constant LIQUIDATION_THRESHOLD = 80; // 80%
@@ -82,7 +85,14 @@ contract LendingProtocol is AutomationCompatibleInterface, VRFConsumerBaseV2, Fu
     event CreditScoreRequested(address indexed user, bytes32 requestId);
     event CreditScoreReceived(address indexed user, uint256 score);
 
-    constructor(address _priceFeed, address _vrfCoordinator, uint64 _vrfSubscriptionId, bytes32 _vrfKeyHash, address _functionsRouter) 
+    constructor(
+        address _priceFeed,
+        address _vrfCoordinator,
+        uint64 _vrfSubscriptionId,
+        bytes32 _vrfKeyHash,
+        address _functionsRouter,
+        address _dai
+    ) 
         VRFConsumerBaseV2(_vrfCoordinator)
         FunctionsClient(_functionsRouter)
     {
@@ -91,6 +101,7 @@ contract LendingProtocol is AutomationCompatibleInterface, VRFConsumerBaseV2, Fu
         vrfCoordinator = VRFCoordinatorV2Interface(_vrfCoordinator);
         vrfSubscriptionId = _vrfSubscriptionId;
         vrfKeyHash = _vrfKeyHash;
+        dai = IERC20(_dai);
     }
 
     // --- Chainlink Functions: Credit Score ---
@@ -155,8 +166,8 @@ contract LendingProtocol is AutomationCompatibleInterface, VRFConsumerBaseV2, Fu
     function repay(uint256 amountDAI) external {
         require(amountDAI > 0, "Amount must be greater than 0");
         require(positions[msg.sender].debtDAI >= amountDAI, "Repay exceeds debt");
+        require(dai.transferFrom(msg.sender, address(this), amountDAI), "DAI transfer failed");
         positions[msg.sender].debtDAI -= amountDAI;
-        // In production, transfer DAI from user here
         emit Repaid(msg.sender, amountDAI);
     }
 
